@@ -26,18 +26,23 @@ static char *make_binary_path(char *path, char *name)
     return binary_path;
 }
 
+static void init_path_search(char **pathlist, char **path)
+{
+    if (!(*pathlist))
+        *pathlist = strdup("/usr/sbin:/usr/bin:/sbin:/bin");
+    else
+        *pathlist = strdup(*pathlist);
+    *path = strtok(*pathlist, ":");
+}
+
 static char *search_binary_path(char *name, char **env)
 {
     char *pathlist = get_env(env, "PATH");
-    char *path;
-    char *binary_path;
+    char *path = NULL;
+    char *binary_path = NULL;
     char *ret = NULL;
 
-    if (!pathlist)
-        pathlist = strdup("/usr/sbin:/usr/bin:/sbin:/bin");
-    else
-        pathlist = strdup(pathlist);
-    path = strtok(pathlist, ":");
+    init_path_search(&pathlist, &path);
     while (path) {
         if (!(binary_path = make_binary_path(path, name)))
             ret = NULL;
