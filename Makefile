@@ -19,7 +19,7 @@ INC_DIR				=	./include
 
 CFLAGS				=	-I$(INC_DIR) -Wall
 
-NAME				=	my_strace
+NAME				=	strace
 
 all: $(NAME)
 

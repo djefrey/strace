@@ -1,4 +1,4 @@
 .vscode
 *.o
 vgcore.*
-my_strace
+strace
