@@ -31,19 +31,27 @@ static char *search_binary_path(char *name, char **env)
     char *pathlist = get_env(env, "PATH");
     char *path;
     char *binary_path;
+    char *ret = NULL;
 
     if (!pathlist)
-        pathlist = "/usr/sbin:/usr/bin:/sbin:/bin";
+        pathlist = strdup("/usr/sbin:/usr/bin:/sbin:/bin");
+    else
+        pathlist = strdup(pathlist);
     path = strtok(pathlist, ":");
     while (path) {
         if (!(binary_path = make_binary_path(path, name)))
-            return NULL;
+            ret = NULL;
         else if (!access(binary_path, F_OK))
-            return path;
-        free(path);
-        path = strtok(NULL, ":");
+            ret = binary_path;
+        else {
+            free(binary_path);
+            path = strtok(NULL, ":");
+            continue;
+        }
+        break;
     }
-    return NULL;
+    free(pathlist);
+    return ret;
 }
 
 static char *get_frome_home(char *name, char **env)
