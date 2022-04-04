@@ -13,11 +13,12 @@
 #include "strace.h"
 #include "syscalls.h"
 
-static void set_call_values(call_t *call,
-struct user_regs_struct *regs, bool print)
+static void set_call_values(call_t *call, struct user_regs_struct *regs,
+bool print, bool start_execve)
 {
     call->to_print = print;
     call->id = regs->rax;
+    call->start_execve = start_execve;
     call->args[0] = regs->rdi;
     call->args[1] = regs->rsi;
     call->args[2] = regs->rdx;
@@ -31,6 +32,7 @@ struct user_regs_struct *regs, bool *print)
 {
     unsigned long instr;
     unsigned long opcode;
+    bool start_execve = false;
 
     errno = 0;
     instr = ptrace(PTRACE_PEEKTEXT, pid, regs->rip, 0);
@@ -38,9 +40,11 @@ struct user_regs_struct *regs, bool *print)
         return -1;
     opcode = instr & 0x000000000000FFFF;
     if (opcode == 0x050F) {
-        if (!(*print) && regs->rax == 59)
+        if (!(*print) && regs->rax == 59) {
             *print = 1;
-        set_call_values(call, regs, *print);
+            start_execve = true;
+        }
+        set_call_values(call, regs, *print, start_execve);
     } else
         call->to_print = false;
     return 1;
@@ -63,12 +67,13 @@ int trace_program(pid_t pid, bool detailled)
             run = read_instruction(pid, call_buff + i % 2, &regs, &print);
             (call_buff + (i + 1) % 2)->ret = regs.rax;
             (call_buff + (i + 1) % 2)->valid_ret = true;
-            print_syscall(call_buff + (i + 1) % 2, detailled);
+            print_syscall(call_buff + (i + 1) % 2, detailled, pid);
             ptrace(PTRACE_SINGLESTEP, pid, 0, 0);
         } else
             run = 0;
     }
     (call_buff + i % 2)->valid_ret = false;
-    print_syscall(call_buff + i % 2, detailled);
+    print_syscall(call_buff + i % 2, detailled, pid);
+    ptrace(PTRACE_DETACH, pid, 0, 0);
     return run == -1 ? 84 : 0;
 }

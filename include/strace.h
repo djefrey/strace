@@ -20,6 +20,7 @@ typedef struct args_s {
 typedef struct call_s {
     bool to_print;
     bool valid_ret;
+    bool start_execve;
     uint64_t id;
     uint64_t ret;
     uint64_t args[6];
@@ -34,4 +35,4 @@ int trace_program(pid_t pid, bool detailled);
 
 char *get_binary_path(char *name, char **env);
 
-void print_syscall(call_t *call, bool detailled);
+void print_syscall(call_t *call, bool detailled, pid_t pid);
