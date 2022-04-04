@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/wait.h>
 #include <sys/user.h>
 #include <sys/ptrace.h>
 #include "strace.h"
@@ -89,4 +90,11 @@ void print_syscall(call_t *call, bool detailled, pid_t pid)
         fprintf(stderr, "\n");
         call->to_print = false;
     }
+}
+
+void print_exit(int status)
+{
+    int exit = WEXITSTATUS(status);
+
+    fprintf(stderr, "+++ exited with %u +++\n", exit);
 }

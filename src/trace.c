@@ -75,5 +75,6 @@ int trace_program(pid_t pid, bool detailled)
     (call_buff + i % 2)->valid_ret = false;
     print_syscall(call_buff + i % 2, detailled, pid);
     ptrace(PTRACE_DETACH, pid, 0, 0);
+    print_exit(status);
     return run == -1 ? 84 : 0;
 }

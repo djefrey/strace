@@ -36,3 +36,4 @@ int trace_program(pid_t pid, bool detailled);
 char *get_binary_path(char *name, char **env);
 
 void print_syscall(call_t *call, bool detailled, pid_t pid);
+void print_exit(int status);
