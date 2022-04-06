@@ -2,3 +2,6 @@
 *.o
 vgcore.*
 strace
+test.c
+a.out
+notes.txt
