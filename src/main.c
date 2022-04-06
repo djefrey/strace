@@ -18,7 +18,7 @@ int main(int ac, char **av, char **env)
             return search_and_start(av[nb_args + 1],
             av + nb_args + 1, env, args.detailled);
         } else
-            return trace_program(args.pid, args.detailled);
+            return trace_program(&args);
     }
     return 84;
 }

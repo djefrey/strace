@@ -31,7 +31,7 @@ char *get_env(char **env, char *name);
 int read_args(int ac, char **av, args_t *args);
 
 int search_and_start(char *name, char **args, char **env, bool detailled);
-int trace_program(pid_t pid, bool detailled);
+int trace_program(args_t *args);
 
 char *get_binary_path(char *name, char **env);
 

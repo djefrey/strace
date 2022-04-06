@@ -293,7 +293,7 @@ const syscall_t SYSCALL_TABLE[330] = {
     {259, "mknodat", 4, NUM, NUM, STRING, MODE_T, DEV_T, 0, 0},
     {260, "fchownat", 5, NUM, NUM, STRING, UID_T, GID_T, NUM, 0},
     {261, "futimesat", 3, NUM, NUM, STRING, CONST_STRUCT_TIMEVAL, 0, 0, 0},
-    {262, "newfstatat", 6, 0, 0, 0, 0, 0, 0, 0},
+    {262, "newfstatat", 4, NUM, NUM, STRING, STRUCT_STAT_P, NUM, 0, 0},
     {263, "unlinkat", 3, NUM, NUM, STRING, NUM, 0, 0, 0},
     {264, "renameat", 4, NUM, NUM, STRING, NUM, STRING, 0, 0},
     {265, "linkat", 5, NUM, NUM, STRING, NUM, STRING, NUM, 0},

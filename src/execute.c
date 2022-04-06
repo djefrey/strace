@@ -35,7 +35,7 @@ int search_and_start(char *name, char **args, char **env, bool detailled)
         free((char*) bin);
         return 84;
     }
-    ret = trace_program(pid, detailled);
+    ret = trace_program(&((args_t) {pid, detailled}));
     free((char*) bin);
     return ret;
 }

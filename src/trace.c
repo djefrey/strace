@@ -50,31 +50,40 @@ struct user_regs_struct *regs, bool *print)
     return 1;
 }
 
-int trace_program(pid_t pid, bool detailled)
+static int handle_instruction(args_t *args,
+call_t call_buff[2], bool *print, int i)
 {
     struct user_regs_struct regs;
+    int run;
+
+    ptrace(PTRACE_GETREGS, args->pid, 0, &regs);
+    run = read_instruction(args->pid, call_buff + i % 2, &regs, print);
+    (call_buff + (i + 1) % 2)->ret = regs.rax;
+    (call_buff + (i + 1) % 2)->valid_ret = true;
+    print_syscall(call_buff + (i + 1) % 2, args->detailled, args->pid);
+    ptrace(PTRACE_SINGLESTEP, args->pid, 0, 0);
+    return run;
+}
+
+int trace_program(args_t *args)
+{
     call_t call_buff[2] = {0};
     int run = 1;
     bool print = 0;
     int i = 0;
     int status;
 
-    ptrace(PTRACE_ATTACH, pid, 0, 0);
-    for (; run == 1; i++) {
-        waitpid(pid, &status, 0);
+    ptrace(PTRACE_ATTACH, args->pid, 0, 0);
+    for (; run; i++) {
+        waitpid(args->pid, &status, 0);
         if (!WIFEXITED(status)) {
-            ptrace(PTRACE_GETREGS, pid, 0, &regs);
-            run = read_instruction(pid, call_buff + i % 2, &regs, &print);
-            (call_buff + (i + 1) % 2)->ret = regs.rax;
-            (call_buff + (i + 1) % 2)->valid_ret = true;
-            print_syscall(call_buff + (i + 1) % 2, detailled, pid);
-            ptrace(PTRACE_SINGLESTEP, pid, 0, 0);
+            run = handle_instruction(args, call_buff, &print, i);
         } else
             run = 0;
     }
     (call_buff + i % 2)->valid_ret = false;
-    print_syscall(call_buff + i % 2, detailled, pid);
-    ptrace(PTRACE_DETACH, pid, 0, 0);
+    print_syscall(call_buff + i % 2, args->detailled, args->pid);
+    ptrace(PTRACE_DETACH, args->pid, 0, 0);
     print_exit(status);
     return run == -1 ? 84 : 0;
 }

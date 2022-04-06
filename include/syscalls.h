@@ -119,14 +119,14 @@
 typedef struct syscall_s {
     int id;
     const char *name;
-    int nb_args;
-    int ret_type;
-    int arg0;
-    int arg1;
-    int arg2;
-    int arg3;
-    int arg4;
-    int arg5;
+    char nb_args;
+    char ret_type;
+    char arg0;
+    char arg1;
+    char arg2;
+    char arg3;
+    char arg4;
+    char arg5;
 } syscall_t;
 
 extern const unsigned int SYSCALL_TABLE_SIZE;
