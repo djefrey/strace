@@ -12,6 +12,7 @@
 #include <sys/wait.h>
 #include <sys/user.h>
 #include <sys/ptrace.h>
+#include <sys/stat.h>
 #include "strace.h"
 #include "syscalls.h"
 
@@ -32,7 +33,7 @@ static int print_process_string(pid_t pid, uint64_t ptr)
         }
         fprintf(stderr, "%c", c);
         i++;
-    } while(c != 0);
+    } while (c != 0);
     fprintf(stderr, "\"");
     return i + 1;
 }
@@ -46,7 +47,7 @@ static int print_arg(uint64_t value, int type, bool start_execve, args_t *args)
             return fprintf(stderr, "%li", value);
         case STRING:
             return start_execve ? fprintf(stderr, "\"%s\"", (char*) value)
-            :  print_process_string(args->pid, value);
+            : print_process_string(args->pid, value);
         case UNSIGNED:
             return fprintf(stderr, "%lu", value);
         default:
