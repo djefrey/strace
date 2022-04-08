@@ -12,31 +12,8 @@
 #include <sys/wait.h>
 #include <sys/user.h>
 #include <sys/ptrace.h>
-#include <sys/stat.h>
 #include "strace.h"
 #include "syscalls.h"
-
-static int print_process_string(pid_t pid, uint64_t ptr)
-{
-    int i = 0;
-    char c;
-    long ret;
-
-    fprintf(stderr, "\"");
-    do {
-        errno = 0;
-        ret = (char) ptrace(PTRACE_PEEKDATA, pid, ptr + i);
-        c = (char) (ret & 0x00000000000000FF);
-        if (ret == -1 && errno != 0) {
-            perror(strerror(errno));
-            exit(84);
-        }
-        fprintf(stderr, "%c", c);
-        i++;
-    } while (c != 0);
-    fprintf(stderr, "\"");
-    return i + 1;
-}
 
 static int print_arg(uint64_t value, int type, bool start_execve, args_t *args)
 {
@@ -50,6 +27,8 @@ static int print_arg(uint64_t value, int type, bool start_execve, args_t *args)
             : print_process_string(args->pid, value);
         case UNSIGNED:
             return fprintf(stderr, "%lu", value);
+        case STRUCT_STAT_P:
+            return print_process_stat(args->pid, value);
         default:
             return fprintf(stderr, "%#lx", value);
     }

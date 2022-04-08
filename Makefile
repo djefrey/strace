@@ -10,6 +10,7 @@ SRC					=	src/main.c				\
 						src/execute.c			\
 						src/trace.c				\
 						src/print.c				\
+						src/print_process.c		\
 						src/path.c				\
 						src/syscalls.c
 
