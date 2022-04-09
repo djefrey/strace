@@ -49,9 +49,11 @@ int print_process_string(pid_t pid, uint64_t ptr)
             perror(strerror(errno));
             exit(84);
         }
+        if (c == 0)
+            break;
         fprintf(stderr, "%c", c);
         i++;
-    } while (c != 0);
+    } while (true);
     fprintf(stderr, "\"");
     return i + 1;
 }
